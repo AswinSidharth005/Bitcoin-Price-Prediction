@@ -1,0 +1,41 @@
+import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
+from sklearn.model_selection import train_test_split
+from sklearn.linear_model import LinearRegression
+from sklearn.metrics import mean_squared_error
+
+# Assuming you have a CSV file with historical Bitcoin prices
+data = pd.read_csv('bitcoin_prices.csv')
+
+# Preprocessing data
+data['Date'] = pd.to_datetime(data['Date'])
+data.set_index('Date', inplace=True)
+
+# Feature engineering
+data['Days'] = range(1, len(data) + 1)
+
+# Defining features and target variable
+X = data[['Days']]
+y = data['Price']
+
+# Splitting the data into training and testing sets
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=0)
+
+# Model training
+model = LinearRegression()
+model.fit(X_train, y_train)
+
+# Model evaluation
+y_pred = model.predict(X_test)
+mse = mean_squared_error(y_test, y_pred)
+print('Mean Squared Error:', mse)
+
+# Plotting
+plt.figure(figsize=(10, 6))
+plt.scatter(X_test, y_test, color='blue')
+plt.plot(X_test, y_pred, color='red', linewidth=2)
+plt.title('Bitcoin Price Prediction')
+plt.xlabel('Days')
+plt.ylabel('Price')
+plt.show()
